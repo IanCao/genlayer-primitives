@@ -10,7 +10,7 @@ order; the character counters are the ones the form enforces.
 | 描述 | 1000 | 969 chars |
 | 使用步骤 | - | 5 steps |
 | 预期验证结果 | 500 | 402 chars |
-| 网站 | required | https://adjudicate-oracle.app.workbuddy.host/?sharecode=QO2IQXTGPX |
+| 网站 | required | https://iancao.github.io/genlayer-primitives |
 | GitHub | required | https://github.com/IanCao/genlayer-primitives |
 | 证明材料 | required, GitHub Repository | https://github.com/IanCao/genlayer-primitives |
 
@@ -59,7 +59,7 @@ submission rather than shipping a rushed one.
 **Step 1 - 标题: Open the app**
 
 ```
-Open https://adjudicate-oracle.app.workbuddy.host/?sharecode=QO2IQXTGPX. It reads claims straight from Studionet, so the list renders with no wallet connected.
+Open https://iancao.github.io/genlayer-primitives. It reads claims straight from Studionet, so the list renders with no wallet connected.
 ```
 
 **Step 2 - 标题: Connect a wallet**
@@ -108,7 +108,7 @@ Add a second deployment link once v2 is live (same form, second entry).
 
 | Field | Value |
 |---|---|
-| 网站 | https://adjudicate-oracle.app.workbuddy.host/?sharecode=QO2IQXTGPX |
+| 网站 | https://iancao.github.io/genlayer-primitives |
 | GitHub | `https://github.com/IanCao/genlayer-primitives` |
 | 证明材料 | `https://github.com/IanCao/genlayer-primitives` (type: GitHub Repository) |
 

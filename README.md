@@ -12,8 +12,10 @@ dispute that already has structure, evidence and skin in the game.**
 Both are Python, both extend `gl.Contract`, both are self-contained (no imports
 from each other, no frontend, no off-chain service).
 
-**Live client:** https://adjudicate-oracle.app.workbuddy.host/?sharecode=QO2IQXTGPX - reads claims straight from Studionet
-with no wallet, and signs through one when you want to post or challenge.
+**Live client:** https://iancao.github.io/genlayer-primitives/ - reads claims
+straight from Studionet with no wallet, and signs through one when you want to
+post or challenge. Served by GitHub Pages from the `gh-pages` branch, which is
+just a build of `app/`; `bash scripts/publish_app.sh` republishes it.
 
 ```bash
 cd app && python -m http.server 8080   # or just open the link above

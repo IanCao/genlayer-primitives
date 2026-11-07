@@ -11,6 +11,22 @@ app.js          client, state machine mapping, transaction lifecycle
 vendor/         genlayer-js 1.1.8 bundled with esbuild (~600 KB)
 ```
 
+## The live URL
+
+**https://iancao.github.io/genlayer-primitives/**
+
+GitHub Pages serves the `gh-pages` branch, and that branch's tree is exactly
+`app/` plus a `.nojekyll` marker - there is no second copy of the source to keep
+in sync. After changing anything here, republish:
+
+```bash
+bash scripts/publish_app.sh
+```
+
+It rebuilds the branch from the current `app/` tree and pushes it; Pages
+redeploys in about a minute. Editing `app/` without running it changes the repo
+but not the site, which is the one way these two can drift.
+
 ## Run it locally
 
 Any static server works; ES modules need `http://`, not `file://`:
