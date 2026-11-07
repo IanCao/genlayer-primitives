@@ -29,14 +29,46 @@ def _post(module, contract, sender=ALICE, bond=GEN // 100, statement="Protocol X
 
 def test_rejects_bond_below_protocol_floor():
     mod = __import__("helpers").load_contract("contracts/optimistic_claim_oracle.py")
-    with pytest.raises(mod.gl.vm.UserError, match="floor"):
+    with pytest.raises(mod.gl.vm.UserError, match="below the protocol floor"):
         mod.OptimisticClaimOracle(mod.u256(1), mod.u256(3600))
+
+
+def test_floor_error_names_the_numbers_and_the_escape_hatch():
+    """A reverted deploy is the only debug channel, so the message must carry
+    both the offending value and the required one."""
+    mod = __import__("helpers").load_contract("contracts/optimistic_claim_oracle.py")
+    with pytest.raises(mod.gl.vm.UserError) as err:
+        mod.OptimisticClaimOracle(mod.u256(10**15), mod.u256(3600))
+    message = str(err.value)
+    assert str(10**15) in message
+    assert str(10**16) in message
+    assert "pass 0" in message
+
+
+def test_exact_floor_is_accepted():
+    mod = __import__("helpers").load_contract("contracts/optimistic_claim_oracle.py")
+    contract = mod.OptimisticClaimOracle(mod.u256(10**16), mod.u256(3600))
+    assert int(contract.min_bond) == 10**16
+
+
+def test_zero_min_bond_means_use_the_floor():
+    """The sentinel exists so a caller who does not want to think about wei
+    cannot brick their own deploy."""
+    mod = __import__("helpers").load_contract("contracts/optimistic_claim_oracle.py")
+    contract = mod.OptimisticClaimOracle(mod.u256(0), mod.u256(3600))
+    assert int(contract.min_bond) == int(mod.MIN_BOND_FLOOR)
 
 
 def test_rejects_short_challenge_window():
     mod = __import__("helpers").load_contract("contracts/optimistic_claim_oracle.py")
-    with pytest.raises(mod.gl.vm.UserError, match="too short"):
+    with pytest.raises(mod.gl.vm.UserError, match="below the minimum"):
         mod.OptimisticClaimOracle(mod.u256(GEN // 100), mod.u256(5))
+
+
+def test_zero_challenge_window_means_use_the_minimum():
+    mod = __import__("helpers").load_contract("contracts/optimistic_claim_oracle.py")
+    contract = mod.OptimisticClaimOracle(mod.u256(GEN // 100), mod.u256(0))
+    assert int(contract.challenge_window) == int(mod.MIN_CHALLENGE_WINDOW)
 
 
 # -------------------------------------------------------------- posting claims
@@ -57,7 +89,7 @@ def test_claim_records_bond_and_deadline():
 def test_post_claim_rejects_underfunded_bond():
     module, contract = deploy_oracle()
     module.gl.set_context(sender=ALICE, value=GEN // 1000)
-    with pytest.raises(module.gl.vm.UserError, match="bond below"):
+    with pytest.raises(module.gl.vm.UserError, match="is below min_bond"):
         contract.post_claim("claim", EVIDENCE_URL)
 
 

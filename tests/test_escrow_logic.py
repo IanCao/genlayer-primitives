@@ -64,7 +64,7 @@ def test_create_rejects_self_escrow():
 def test_create_rejects_dust_amount():
     module, contract = deploy_escrow()
     module.gl.set_context(sender=ALICE, value=1)
-    with pytest.raises(module.gl.vm.UserError, match="below minimum"):
+    with pytest.raises(module.gl.vm.UserError, match="below the minimum"):
         contract.create_escrow(BOB, CRITERIA, module.u256(86400))
 
 
@@ -84,8 +84,14 @@ def test_create_rejects_zero_deadline():
 
 def test_escalation_window_has_a_floor():
     mod = __import__("helpers").load_contract("contracts/deliverable_escrow.py")
-    with pytest.raises(mod.gl.vm.UserError, match="too short"):
+    with pytest.raises(mod.gl.vm.UserError, match="below the minimum"):
         mod.DeliverableEscrow(mod.u256(1))
+
+
+def test_zero_escalation_window_means_use_the_minimum():
+    mod = __import__("helpers").load_contract("contracts/deliverable_escrow.py")
+    contract = mod.DeliverableEscrow(mod.u256(0))
+    assert int(contract.escalation_window) == int(mod.MIN_ESCALATION_WINDOW)
 
 
 # ------------------------------------------------------------------ submission

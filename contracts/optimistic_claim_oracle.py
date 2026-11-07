@@ -163,13 +163,40 @@ class OptimisticClaimOracle(gl.Contract):
     challenge_window: u256
 
     def __init__(self, min_bond: u256, challenge_window: u256):
-        if min_bond < MIN_BOND_FLOOR:
-            raise gl.vm.UserError("min_bond below protocol floor")
-        if challenge_window < MIN_CHALLENGE_WINDOW:
-            raise gl.vm.UserError("challenge_window too short")
+        # Normalise to plain int before comparing. Constructor arguments arrive
+        # from the transaction JSON, so they may be int or str, and comparing a
+        # raw int against a u256 relies on the SDK's reflected comparison
+        # operators. Going through int() makes the check unambiguous.
+        #
+        # min_bond == 0 is a documented sentinel for "use the protocol floor" -
+        # the alternative is a deploy that reverts because the caller guessed
+        # the unit wrong (wei vs GEN), and a reverted deploy is the worst place
+        # to discover that.
+        floor = int(MIN_BOND_FLOOR)
+        bond = int(min_bond)
+        if bond < 0:
+            raise gl.vm.UserError("min_bond must be >= 0")
+        if bond == 0:
+            bond = floor
+        if bond < floor:
+            raise gl.vm.UserError(
+                "min_bond " + str(bond) + " wei is below the protocol floor of "
+                + str(floor) + " wei (0.01 GEN); pass 0 to use the floor"
+            )
+
+        min_window = int(MIN_CHALLENGE_WINDOW)
+        window = int(challenge_window)
+        if window == 0:
+            window = min_window
+        if window < min_window:
+            raise gl.vm.UserError(
+                "challenge_window " + str(window) + "s is below the minimum of "
+                + str(min_window) + "s; pass 0 to use the minimum"
+            )
+
         self.next_id = u256(0)
-        self.min_bond = min_bond
-        self.challenge_window = challenge_window
+        self.min_bond = u256(bond)
+        self.challenge_window = u256(window)
 
     # ------------------------------------------------------------------ writes
 
@@ -180,9 +207,12 @@ class OptimisticClaimOracle(gl.Contract):
         Uncontested claims never invoke an LLM - they simply age out of the
         challenge window and the bond is returned.
         """
-        bond = gl.message.value
-        if bond < self.min_bond:
-            raise gl.vm.UserError("bond below min_bond")
+        bond = int(gl.message.value)
+        if bond < int(self.min_bond):
+            raise gl.vm.UserError(
+                "bond " + str(bond) + " wei is below min_bond "
+                + str(int(self.min_bond)) + " wei"
+            )
 
         text = statement.strip()
         if len(text) == 0:
@@ -217,8 +247,11 @@ class OptimisticClaimOracle(gl.Contract):
             raise gl.vm.UserError("claim is not open")
         if self._now() >= int(claim.challenge_deadline):
             raise gl.vm.UserError("challenge window closed")
-        if gl.message.value != claim.bond:
-            raise gl.vm.UserError("challenger must match the author bond")
+        if int(gl.message.value) != int(claim.bond):
+            raise gl.vm.UserError(
+                "challenger must match the author bond of "
+                + str(int(claim.bond)) + " wei"
+            )
 
         claim.status = STATUS_CHALLENGED
         claim.challenger = gl.message.sender_address

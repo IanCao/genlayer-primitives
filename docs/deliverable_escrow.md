@@ -114,5 +114,8 @@ Constructor: `DeliverableEscrow(escalation_window: u256)`
 escalation_window = 3600   # 1h on testnet; a day is sane for real work
 ```
 
+Studio deploy payload: `{"args":[3600]}`. Passing `0` means "use the minimum"
+(60s), so a bad unit guess cannot revert the deploy.
+
 `withdraw()` needs a live network (ghost contract transfer); direct-mode tests
 assert on `credits`.

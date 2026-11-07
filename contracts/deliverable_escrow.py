@@ -150,19 +150,36 @@ class DeliverableEscrow(gl.Contract):
     escalation_window: u256
 
     def __init__(self, escalation_window: u256):
-        if escalation_window < MIN_ESCALATION_WINDOW:
-            raise gl.vm.UserError("escalation_window too short")
+        # int() both sides: the argument arrives from transaction JSON as a raw
+        # int or str, and comparing that against a u256 leans on reflected
+        # comparison operators in the SDK. Normalising removes the ambiguity,
+        # and a reverted deploy is a terrible place to debug a unit mix-up.
+        # 0 is a documented sentinel for "use the minimum".
+        minimum = int(MIN_ESCALATION_WINDOW)
+        window = int(escalation_window)
+        if window < 0:
+            raise gl.vm.UserError("escalation_window must be >= 0")
+        if window == 0:
+            window = minimum
+        if window < minimum:
+            raise gl.vm.UserError(
+                "escalation_window " + str(window) + "s is below the minimum of "
+                + str(minimum) + "s; pass 0 to use the minimum"
+            )
         self.next_id = u256(0)
-        self.escalation_window = escalation_window
+        self.escalation_window = u256(window)
 
     # ------------------------------------------------------------------ writes
 
     @gl.public.write.payable
     def create_escrow(self, provider: str, criteria: str, deadline_seconds: u256) -> u256:
         """Fund an escrow whose release condition is written, not binary."""
-        amount = gl.message.value
-        if amount < MIN_ESCROW:
-            raise gl.vm.UserError("escrow below minimum")
+        amount = int(gl.message.value)
+        if amount < int(MIN_ESCROW):
+            raise gl.vm.UserError(
+                "escrow amount " + str(amount) + " wei is below the minimum of "
+                + str(int(MIN_ESCROW)) + " wei"
+            )
 
         payee = Address(provider)
         if payee == gl.message.sender_address:

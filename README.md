@@ -47,7 +47,7 @@ these contracts does that:
 
 ```
 contracts/    the two primitives
-tests/        51 offline logic tests (pytest)
+tests/        56 offline logic tests (pytest)
 tools/        genshim - a minimal GenVM stand-in so logic tests run anywhere
 docs/         per-primitive design notes, ready to paste into a submission
 ```
@@ -61,7 +61,7 @@ pip install pytest                # add genlayer-test only for direct-mode runs
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests -q -p no:cacheprovider
 ```
 
-**51 tests, <1s, no network, no Docker.**
+**56 tests, <1s, no network, no Docker.**
 
 `tests/` runs the contracts against `tools/genshim/genlayer.py`, a ~250 line
 stand-in for GenVM that implements exactly the surface these two contracts touch:
@@ -104,11 +104,21 @@ pytest tests_direct -v        # downloads the GenVM runtime on first run
 
 1. Open <https://studio.genlayer.com>, connect a wallet that holds testnet GEN
    (Studionet has a built-in faucet: the 💧 button in the account selector).
-2. Paste one contract file, then deploy with its constructor arguments:
-   - `OptimisticClaimOracle(min_bond, challenge_window)` -
-     e.g. `10000000000000000` wei (0.01 GEN) and `86400` (24h, keep it short on
-     testnet).
-   - `DeliverableEscrow(escalation_window)` - e.g. `3600`.
+2. Paste one contract file, then deploy with its constructor arguments. The
+   Studio takes a JSON array, so the exact strings to paste are:
+
+   ```
+   OptimisticClaimOracle : {"args":[10000000000000000,86400]}
+   DeliverableEscrow     : {"args":[3600]}
+   ```
+
+   `10000000000000000` is 1e16 wei = 0.01 GEN and it is also the protocol floor.
+   Counting the zeros wrong is the single easiest way to get a failed deploy, so
+   **passing `0` for either argument means "use the protocol minimum"** - that
+   path cannot revert on a unit mix-up. If you do pass a value below the floor
+   the rollback message now names both numbers, e.g.
+   `min_bond 1000000000000000 wei is below the protocol floor of 10000000000000000 wei (0.01 GEN)`.
+
 3. Copy the deployed address from the explorer to link it in a submission.
 
 ## What integrators can build on top

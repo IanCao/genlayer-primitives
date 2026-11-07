@@ -106,9 +106,18 @@ expiry.
 Constructor: `OptimisticClaimOracle(min_bond: u256, challenge_window: u256)`
 
 ```
-min_bond          = 10000000000000000   # 0.01 GEN
+min_bond          = 10000000000000000   # 1e16 wei = 0.01 GEN, also the floor
 challenge_window  = 3600                # 1h on testnet; 86400 is sane for prod
 ```
+
+Studio deploy payload: `{"args":[10000000000000000,3600]}`
+
+Both arguments treat `0` as "use the protocol minimum" (1e16 wei / 60s). That
+sentinel exists because deploy arguments are the one place where a units
+mistake is unrecoverable: `1000000000000000` (one zero short) is 0.001 GEN,
+sits below the floor, and reverts the whole deployment. When a value really is
+too low the rollback message names both numbers so the fix is obvious from the
+transaction history.
 
 `withdraw()` pushes GEN through the ghost contract, so it needs a live network;
 direct-mode tests assert on the `credits` ledger instead.

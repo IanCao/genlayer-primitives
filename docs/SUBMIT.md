@@ -110,7 +110,7 @@ https://github.com/IanCao/genlayer-primitives/blob/main/docs/deliverable_escrow.
 
 ## What to say if a reviewer asks "is this tested?"
 
-`pytest tests -q` runs 51 tests in about 9 seconds with no network and no Docker.
+`pytest tests -q` runs 56 tests in about 1 second with no network and no Docker.
 They cover bond arithmetic, both state machines, permission edges, all three
 verdict paths per contract, validator dissent, confidence/payout drift, and
 prompt-injection behaviour (a document that tries to dictate the verdict does not
