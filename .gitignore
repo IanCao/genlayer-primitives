@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 artifacts/
 .pytest_cache/
+node_modules/
+.verify/
+package-lock.json

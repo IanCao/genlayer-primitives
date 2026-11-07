@@ -5,9 +5,12 @@ Two standalone contracts, two submissions (one per weekly slot).
 
 Repo: https://github.com/IanCao/genlayer-primitives
 
-Both contracts are deployed on Studionet and were verified by reading their
-schema back over RPC (`gen_getContractSchema`), which is derived from the code
-actually running on the network:
+Both contracts are deployed on Studionet. `scripts/verify_deployment.mjs`
+re-checks the deployment against this repo in one command: it pulls the source
+stored on chain and diffs it against `contracts/`, compiles the repo file and
+diffs the schema against the deployed one, executes a view call, and locates the
+constructor values inside the contract's own storage slots. No private key, no
+gas. All four checks pass for both contracts:
 
 | Contract | Address | Constructor args |
 |---|---|---|

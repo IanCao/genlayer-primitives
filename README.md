@@ -17,17 +17,59 @@ from each other, no frontend, no off-chain service).
 | Contract | Address | Constructor args | Consensus |
 |---|---|---|---|
 | OptimisticClaimOracle | `0x3a3A9c681cD547ccb293a6329839cc50D529fAd9` | `min_bond=1e16`, `challenge_window=86400` | ACCEPTED, 3/5 agreed across two model families |
-| DeliverableEscrow | `0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105` | `escalation_window=3600` | deployed |
+| DeliverableEscrow | `0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105` | `escalation_window=3600` | ACCEPTED |
 
-Verify the running code yourself - the schema is derived from what is actually
-on chain, so it matches a source only if that source is what got deployed:
+### Verify it yourself
+
+`scripts/verify_deployment.mjs` proves the running bytecode is this source and
+that the constructor values actually took effect. It is read-only: no private
+key, no signing, no gas.
 
 ```bash
-curl -s -X POST https://studio.genlayer.com/api \
-  -H 'Content-Type: application/json' -H 'User-Agent: Mozilla/5.0' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"gen_getContractSchema",
-       "params":["0x3a3A9c681cD547ccb293a6329839cc50D529fAd9"]}'
+npm install genlayer-js
+node scripts/verify_deployment.mjs
 ```
+
+```
+Studionet  chainId=61999  head=1794058442
+
+========================================================================
+OptimisticClaimOracle  0x3a3A9c681cD547ccb293a6329839cc50D529fAd9
+  code    identical  sha256 8271cb40147d877e vs 8271cb40147d877e
+  schema  identical  9 methods, ctor [min_bond, challenge_window]
+  exec    claim_count() -> 0
+  guard   bond 0 wei is below min_bond 10000000000000000 wei
+  slot    min_bond           10000000000000000    slot Ny1Gw62p+J… byte 56
+  slot    challenge_window   86400                slot Ny1Gw62p+J… byte 88
+
+========================================================================
+DeliverableEscrow  0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105
+  code    identical  sha256 bf1dec99b7b00bc6 vs bf1dec99b7b00bc6
+  schema  identical  12 methods, ctor [escalation_window]
+  exec    escrow_count() -> 0
+  guard   escrow amount 0 wei is below the minimum of 10000000000000000 wei
+  slot    escalation_window  3600                 slot Ny1Gw62p+J… byte 56
+```
+
+Four independent checks, because each one alone can be fooled:
+
+- **code** - `getContractCode(address)` returns the source stored on chain,
+  compared byte-for-byte with the repo file. Only line endings differ (Studio
+  stores CRLF); the lengths and SHA-256 match exactly after normalising them.
+- **schema** - the repo file is compiled through `gen_getContractSchemaForCode`
+  and diffed against `gen_getContractSchema(address)`. A schema match alone
+  would not prove the function bodies match, which is why the check above exists.
+- **exec** - a real `gen_call` to a view, proving the contract executes and its
+  state is initialised (`claim_count() == 0` on a fresh deployment).
+- **storage** - the constructor values are located inside the contract's own
+  storage slots, at byte offsets 56 and 88 of the same slot: exactly two 32-byte
+  words apart, which is where `min_bond` and `challenge_window` are laid out.
+
+The oracle is checked a fifth way, without touching storage: `post_claim()` is
+payable and its first statement reverts with both the value sent and the stored
+`min_bond`. A value-0 simulation therefore prints the live `min_bond` in plain
+text, straight out of the contract's own execution. Both routes return
+`10000000000000000`, so the deployed floor is not a guess from the deploy input.
 
 ## Why these are primitives rather than demos
 
@@ -66,6 +108,7 @@ these contracts does that:
 contracts/    the two primitives
 tests/        56 offline logic tests (pytest)
 tools/        genshim - a minimal GenVM stand-in so logic tests run anywhere
+scripts/      verify_deployment.mjs - checks the live deployment against this source
 docs/         per-primitive design notes, ready to paste into a submission
 ```
 
