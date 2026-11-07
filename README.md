@@ -203,3 +203,12 @@ pytest tests_direct -v        # downloads the GenVM runtime on first run
   juror selection, which needs randomness, which is a separate primitive.
 - Both contracts assume evidence URLs are served without authentication. Paywalled
   or JS-only pages will degrade to `INCONCLUSIVE` / `REJECT` rather than guess.
+
+## Companion repository
+
+The escrow is also published standalone at
+[IanCao/genlayer-escrow](https://github.com/IanCao/genlayer-escrow), with its own
+29-test suite, its own verifier and its own README. The copy in this repo is the
+one `scripts/verify_deployment.mjs` diffs against chain when it checks both
+deployments in one pass - so if the two ever drifted, the verifier would fail
+rather than quietly disagree.

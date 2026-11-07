@@ -15,29 +15,33 @@ Portal → Contribute → **Intelligent Contracts**. Two contracts, two submissi
 
 Submit them one at a time. The first is the oracle, the second the escrow.
 
-## Why every URL is per-contract
+## Evidence URL rules (learned the hard way)
 
-The portal rejects a proof URL it has already seen (`This URL has already been
-submitted`), and it keeps that record across submissions. So the repo root
-`https://github.com/IanCao/genlayer-primitives` can be used **once**, on
-whichever submission goes first - it is not in either block below.
+The portal validates proof URLs by **type**, and it only recognises two shapes:
 
-Each submission instead carries a release tag pinned to the commit it describes:
-
-| Submission | Tag | What the release page shows |
+| Type | What it accepts | What it does not |
 |---|---|---|
-| 1. Oracle | `oracle-v1.0.0` | Design, Studionet address, ctor args, verify command, tag-pinned source links |
-| 2. Escrow | `escrow-v1.0.0` | Same, for the escrow |
+| `github-repo` | a repository root, `https://github.com/<owner>/<repo>` | release, tag, `blob/` or `tree/` URLs - these have more than two path segments and are not parsed |
+| `studio-contract` | a contract page on the GenLayer Studio/explorer domain | anything outside that domain |
 
-Tagged URLs never move, so a reviewer opening one years later sees the exact
-bytecode that was deployed, not `main` as it drifts. All eight links were checked
-to return HTTP 200.
+Two consequences, both hit in practice:
 
-If the portal still refuses the tag URL, it is normalising to the repository root
-rather than comparing strings. Only then is a second repository needed: the
-contracts share nothing at runtime (`deliverable_escrow.py` imports nothing from
-`optimistic_claim_oracle.py`), so the escrow can be lifted into its own repo with
-`contracts/`, `docs/`, `tests/` and `scripts/` and pushed as-is, no redeploy.
+1. **Deep links do not count.** Tag-pinned `blob/…` URLs are the best thing to
+   send a reviewer, but the validator ignores them, so the submission fails with
+   `Missing required evidence` even though the box is full of valid links.
+2. **A URL cannot be reused across submissions.** The portal keeps that record
+   globally and answers `This URL has already been submitted`, so the same repo
+   root cannot serve two entries.
+
+Together those rules force one repo root per submission. The oracle uses
+`IanCao/genlayer-primitives`; the escrow therefore lives in its own repository,
+`IanCao/genlayer-escrow`, which is not a fork or a copy - it carries the full
+contract, docs, the 29-test suite and the deployment verifier, and the verifier
+confirms its `contracts/deliverable_escrow.py` is byte-identical to the bytecode
+at `0x28Ee25d2…3105` on Studionet.
+
+Deep links are listed *after* the repo root: harmless if the validator skips
+them, useful to a human reviewer who opens the submission later.
 
 ---
 
@@ -64,11 +68,14 @@ INCONCLUSIVE refunds both bonds: evidence that omits a claim is not evidence aga
 **证明材料**
 
 ```
-https://github.com/IanCao/genlayer-primitives/releases/tag/oracle-v1.0.0
+https://github.com/IanCao/genlayer-primitives
 https://explorer-studio.genlayer.com/address/0x3a3A9c681cD547ccb293a6329839cc50D529fAd9
-https://github.com/IanCao/genlayer-primitives/blob/oracle-v1.0.0/contracts/optimistic_claim_oracle.py
-https://github.com/IanCao/genlayer-primitives/blob/oracle-v1.0.0/docs/optimistic_claim_oracle.md
+https://github.com/IanCao/genlayer-primitives/blob/main/contracts/optimistic_claim_oracle.py
+https://github.com/IanCao/genlayer-primitives/blob/main/docs/optimistic_claim_oracle.md
 ```
+
+**Status: accepted.** This is the block that went through on the first try - repo
+root first, so the validator finds its `github-repo` evidence. Do not resubmit it.
 
 ---
 
@@ -93,11 +100,15 @@ Round one is asymmetric: only the provider has a document, so the guard is indep
 **证明材料**
 
 ```
-https://github.com/IanCao/genlayer-primitives/releases/tag/escrow-v1.0.0
+https://github.com/IanCao/genlayer-escrow
 https://explorer-studio.genlayer.com/address/0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105
-https://github.com/IanCao/genlayer-primitives/blob/escrow-v1.0.0/contracts/deliverable_escrow.py
-https://github.com/IanCao/genlayer-primitives/blob/escrow-v1.0.0/docs/deliverable_escrow.md
+https://github.com/IanCao/genlayer-escrow/blob/main/contracts/deliverable_escrow.py
+https://github.com/IanCao/genlayer-escrow/blob/main/docs/deliverable_escrow.md
 ```
+
+The first line is the one that matters: it is a repo root, so it satisfies
+`github-repo`, and it is a different repo from submission 1, so it is not a
+duplicate. The other three are for the reviewer's benefit.
 
 ---
 
