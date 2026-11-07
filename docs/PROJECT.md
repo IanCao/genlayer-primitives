@@ -27,8 +27,8 @@ what this is: `Oracles` (primary), `Infrastructure`, `AI`. If `Oracles` is not
 offered, use `DeFi` or `Infrastructure` as primary and keep the second tag as
 `AI`.
 
-**标志** - any square mark works; the page uses a black-to-indigo gradient tile.
-Generate one from `app/index.html`'s `.mark` element, or upload any 512×512 PNG.
+**标志** - upload `app/logo.png` (512×512, PNG). Two overlapping rings with one
+settled point: two parties, one agreed outcome. Same gradient as the site.
 
 ## 02 一句话简介 (148 / 180)
 
