@@ -47,7 +47,7 @@ these contracts does that:
 
 ```
 contracts/    the two primitives
-tests/        50 offline logic tests (pytest)
+tests/        51 offline logic tests (pytest)
 tools/        genshim - a minimal GenVM stand-in so logic tests run anywhere
 docs/         per-primitive design notes, ready to paste into a submission
 ```

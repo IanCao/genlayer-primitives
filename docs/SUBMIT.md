@@ -3,8 +3,12 @@
 Copy-paste blocks for the Portal → Contribute → Intelligent Contracts category.
 Two standalone contracts, two submissions (one per weekly slot).
 
-Fill in `REPO_URL` and `CONTRACT_URL` before submitting - the portal asks for a
-readable source link and, where available, a deployed contract link.
+Repo: https://github.com/IanCao/genlayer-primitives
+
+Each submission links to the repo plus the exact source file. If you deploy the
+contract on Studio, swap the second link for the on-chain address - a deployed
+address is strictly stronger evidence than a source blob, but a readable source
+link is already accepted.
 
 ---
 
@@ -49,7 +53,10 @@ Reusable for: grant milestone truthfulness, "did the project actually ship"
 registries, prediction-market resolution with a dispute bond, moderation appeals,
 insurance triggers with a challenge phase.
 
-Links: `REPO_URL` · `CONTRACT_URL`
+Links:
+https://github.com/IanCao/genlayer-primitives
+https://github.com/IanCao/genlayer-primitives/blob/main/contracts/optimistic_claim_oracle.py
+https://github.com/IanCao/genlayer-primitives/blob/main/docs/optimistic_claim_oracle.md
 
 ---
 
@@ -94,13 +101,16 @@ Reusable for: freelance milestones, grant tranches, bug bounties, content
 licensing, SLA credits - the primitive is `(criteria, deliverable) ->
 payout_bps`, so new use cases need new criteria, not a new contract.
 
-Links: `REPO_URL` · `CONTRACT_URL`
+Links:
+https://github.com/IanCao/genlayer-primitives
+https://github.com/IanCao/genlayer-primitives/blob/main/contracts/deliverable_escrow.py
+https://github.com/IanCao/genlayer-primitives/blob/main/docs/deliverable_escrow.md
 
 ---
 
 ## What to say if a reviewer asks "is this tested?"
 
-`pytest tests -q` runs 50 tests in about 9 seconds with no network and no Docker.
+`pytest tests -q` runs 51 tests in about 9 seconds with no network and no Docker.
 They cover bond arithmetic, both state machines, permission edges, all three
 verdict paths per contract, validator dissent, confidence/payout drift, and
 prompt-injection behaviour (a document that tries to dictate the verdict does not
