@@ -11,8 +11,8 @@ order; the character counters are the ones the form enforces.
 | 使用步骤 | - | 5 steps |
 | 预期验证结果 | 500 | 402 chars |
 | 网站 | required | https://iancao.github.io/genlayer-primitives |
-| GitHub | required | https://github.com/IanCao/genlayer-primitives |
-| 证明材料 | required, GitHub Repository | https://github.com/IanCao/genlayer-primitives |
+| GitHub | required | https://github.com/IanCao/adjudicate |
+| 证明材料 | required, GitHub Repository | https://github.com/IanCao/adjudicate |
 
 ## 01 基本信息
 
@@ -29,6 +29,11 @@ offered, use `DeFi` or `Infrastructure` as primary and keep the second tag as
 
 **标志** - upload `app/logo.png` (512×512, PNG). Two overlapping rings with one
 settled point: two parties, one agreed outcome. Same gradient as the site.
+
+**仓库说明** - GitHub 与证明材料一律填 `https://github.com/IanCao/adjudicate`。
+`genlayer-primitives` 的仓库根已在 Intelligent Contracts 提交中用过，Portal 会判重；
+`adjudicate` 是本项目的独立仓库（合约 + 前端 + 测试 + 验证脚本，57 tests passed，
+verify PASS），网站仍由 primitives 的 gh-pages 提供，两处 README 互相指向。
 
 ## 02 一句话简介 (148 / 180)
 
@@ -110,7 +115,7 @@ Add a second deployment link once v2 is live (same form, second entry).
 |---|---|
 | 网站 | https://iancao.github.io/genlayer-primitives |
 | GitHub | `https://github.com/IanCao/genlayer-primitives` |
-| 证明材料 | `https://github.com/IanCao/genlayer-primitives` (type: GitHub Repository) |
+| 证明材料 | `https://github.com/IanCao/adjudicate` (type: GitHub Repository) |
 
 ## Notes for the reviewer
 

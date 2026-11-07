@@ -243,7 +243,12 @@ pytest tests_direct -v        # downloads the GenVM runtime on first run
 - Both contracts assume evidence URLs are served without authentication. Paywalled
   or JS-only pages will degrade to `INCONCLUSIVE` / `REJECT` rather than guess.
 
-## Companion repository
+## Companion repositories
+
+The project has a dedicated repository at
+[IanCao/adjudicate](https://github.com/IanCao/adjudicate) - oracle contracts,
+the web client, tests and the on-chain verifier in one place. The escrow is
+published standalone at
 
 The escrow is also published standalone at
 [IanCao/genlayer-escrow](https://github.com/IanCao/genlayer-escrow), with its own
