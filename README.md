@@ -61,7 +61,7 @@ pip install pytest                # add genlayer-test only for direct-mode runs
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests -q -p no:cacheprovider
 ```
 
-**50 tests, ~9s, no network, no Docker.**
+**51 tests, <1s, no network, no Docker.**
 
 `tests/` runs the contracts against `tools/genshim/genlayer.py`, a ~250 line
 stand-in for GenVM that implements exactly the surface these two contracts touch:
@@ -97,7 +97,7 @@ pytest tests_direct -v        # downloads the GenVM runtime on first run
 | Escrow delivery | 4 | provider-only submit, URL shape, state transition, judge-before-delivery rejection |
 | Escrow round 1 | 6 | ACCEPT/PARTIAL/REJECT quotes, dissent, payout binding, small drift tolerated |
 | Escrow escalation | 3 | client-only, requires JUDGED, records dispute |
-| Escrow round 2 | 5 | override, confirm, split, both documents in the prompt, wrong state rejected |
+| Escrow round 2 | 6 | override, confirm, split, both documents in the prompt (and in order), wrong state rejected |
 | Refund path | 2 | deadline guard, delivered escrow cannot be refunded |
 
 ## Deploying

@@ -289,6 +289,26 @@ def test_appeal_prompt_carries_both_documents():
     assert "No contact form exists." in prompt
 
 
+def test_placeholder_in_a_document_cannot_shift_the_evidence():
+    """A provider document containing '{DOC_B}' must not swallow the appeal's
+    counter evidence - prompts are concatenated, never placeholder-substituted."""
+    module, contract = deploy_escrow()
+    escrow_id = _delivered(module, contract)
+    module.gl.nondet.web.clear()
+    module.gl.nondet.web.mock(r"provider\.example/deliverable", "PROVIDER-TEXT {DOC_B} PROVIDER-TEXT")
+    module.gl.nondet.web.mock(r"client\.example/complaint", "CLIENT-MARKER")
+    module.gl.llm.mock(r"acceptance reviewer of an escrow contract", _decision("REJECT", 0))
+    module.gl.set_context(sender=ALICE, value=0)
+    contract.judge(escrow_id)
+    contract.escalate(escrow_id, COUNTER_URL)
+
+    module.gl.llm.mock(r"appeal reviewer of an escrow contract", _decision("PARTIAL", 5000))
+    contract.resolve_dispute(escrow_id)
+
+    prompt = module.gl.llm.calls[-1]
+    assert prompt.index("PROVIDER-TEXT {DOC_B} PROVIDER-TEXT") < prompt.index("CLIENT-MARKER")
+
+
 def test_resolve_requires_a_dispute():
     module, contract = deploy_escrow()
     escrow_id = _judged(module, contract, "ACCEPT", 10000)
