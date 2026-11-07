@@ -12,6 +12,23 @@ dispute that already has structure, evidence and skin in the game.**
 Both are Python, both extend `gl.Contract`, both are self-contained (no imports
 from each other, no frontend, no off-chain service).
 
+## Deployed on Studionet
+
+| Contract | Address | Constructor args | Consensus |
+|---|---|---|---|
+| OptimisticClaimOracle | `0x3a3A9c681cD547ccb293a6329839cc50D529fAd9` | `min_bond=1e16`, `challenge_window=86400` | ACCEPTED, 3/5 agreed across two model families |
+| DeliverableEscrow | `0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105` | `escalation_window=3600` | deployed |
+
+Verify the running code yourself - the schema is derived from what is actually
+on chain, so it matches a source only if that source is what got deployed:
+
+```bash
+curl -s -X POST https://studio.genlayer.com/api \
+  -H 'Content-Type: application/json' -H 'User-Agent: Mozilla/5.0' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"gen_getContractSchema",
+       "params":["0x3a3A9c681cD547ccb293a6329839cc50D529fAd9"]}'
+```
+
 ## Why these are primitives rather than demos
 
 A "thin LLM wrapper" asks a model a question and stores the answer. Neither of

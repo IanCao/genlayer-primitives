@@ -5,10 +5,17 @@ Two standalone contracts, two submissions (one per weekly slot).
 
 Repo: https://github.com/IanCao/genlayer-primitives
 
-Each submission links to the repo plus the exact source file. If you deploy the
-contract on Studio, swap the second link for the on-chain address - a deployed
-address is strictly stronger evidence than a source blob, but a readable source
-link is already accepted.
+Both contracts are deployed on Studionet and were verified by reading their
+schema back over RPC (`gen_getContractSchema`), which is derived from the code
+actually running on the network:
+
+| Contract | Address | Constructor args |
+|---|---|---|
+| OptimisticClaimOracle | `0x3a3A9c681cD547ccb293a6329839cc50D529fAd9` | `1e16`, `86400` |
+| DeliverableEscrow | `0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105` | `3600` |
+
+Each submission leads with its on-chain address, then the repo, the exact source
+file, and the design note.
 
 ---
 
@@ -54,6 +61,7 @@ registries, prediction-market resolution with a dispute bond, moderation appeals
 insurance triggers with a challenge phase.
 
 Links:
+0x3a3A9c681cD547ccb293a6329839cc50D529fAd9 (deployed, Studionet)
 https://github.com/IanCao/genlayer-primitives
 https://github.com/IanCao/genlayer-primitives/blob/main/contracts/optimistic_claim_oracle.py
 https://github.com/IanCao/genlayer-primitives/blob/main/docs/optimistic_claim_oracle.md
@@ -102,6 +110,7 @@ licensing, SLA credits - the primitive is `(criteria, deliverable) ->
 payout_bps`, so new use cases need new criteria, not a new contract.
 
 Links:
+0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105 (deployed, Studionet)
 https://github.com/IanCao/genlayer-primitives
 https://github.com/IanCao/genlayer-primitives/blob/main/contracts/deliverable_escrow.py
 https://github.com/IanCao/genlayer-primitives/blob/main/docs/deliverable_escrow.md
