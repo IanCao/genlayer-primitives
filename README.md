@@ -19,6 +19,11 @@ from each other, no frontend, no off-chain service).
 | OptimisticClaimOracle | `0x3a3A9c681cD547ccb293a6329839cc50D529fAd9` | `min_bond=1e16`, `challenge_window=86400` | ACCEPTED, 3/5 agreed across two model families |
 | DeliverableEscrow | `0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105` | `escalation_window=3600` | ACCEPTED |
 
+Each contract is pinned to its own release tag, so the source a reviewer reads is
+the source that was deployed, not `main` as it drifts:
+[`oracle-v1.0.0`](https://github.com/IanCao/genlayer-primitives/releases/tag/oracle-v1.0.0) ·
+[`escrow-v1.0.0`](https://github.com/IanCao/genlayer-primitives/releases/tag/escrow-v1.0.0).
+
 ### Verify it yourself
 
 `scripts/verify_deployment.mjs` proves the running bytecode is this source and

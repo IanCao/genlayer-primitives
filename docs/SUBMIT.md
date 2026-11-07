@@ -15,6 +15,30 @@ Portal → Contribute → **Intelligent Contracts**. Two contracts, two submissi
 
 Submit them one at a time. The first is the oracle, the second the escrow.
 
+## Why every URL is per-contract
+
+The portal rejects a proof URL it has already seen (`This URL has already been
+submitted`), and it keeps that record across submissions. So the repo root
+`https://github.com/IanCao/genlayer-primitives` can be used **once**, on
+whichever submission goes first - it is not in either block below.
+
+Each submission instead carries a release tag pinned to the commit it describes:
+
+| Submission | Tag | What the release page shows |
+|---|---|---|
+| 1. Oracle | `oracle-v1.0.0` | Design, Studionet address, ctor args, verify command, tag-pinned source links |
+| 2. Escrow | `escrow-v1.0.0` | Same, for the escrow |
+
+Tagged URLs never move, so a reviewer opening one years later sees the exact
+bytecode that was deployed, not `main` as it drifts. All eight links were checked
+to return HTTP 200.
+
+If the portal still refuses the tag URL, it is normalising to the repository root
+rather than comparing strings. Only then is a second repository needed: the
+contracts share nothing at runtime (`deliverable_escrow.py` imports nothing from
+`optimistic_claim_oracle.py`), so the escrow can be lifted into its own repo with
+`contracts/`, `docs/`, `tests/` and `scripts/` and pushed as-is, no redeploy.
+
 ---
 
 ## Submission 1 - Optimistic Claim Oracle
@@ -40,11 +64,10 @@ INCONCLUSIVE refunds both bonds: evidence that omits a claim is not evidence aga
 **证明材料**
 
 ```
+https://github.com/IanCao/genlayer-primitives/releases/tag/oracle-v1.0.0
 https://explorer-studio.genlayer.com/address/0x3a3A9c681cD547ccb293a6329839cc50D529fAd9
-https://github.com/IanCao/genlayer-primitives
-https://github.com/IanCao/genlayer-primitives/blob/main/contracts/optimistic_claim_oracle.py
-https://github.com/IanCao/genlayer-primitives/blob/main/docs/optimistic_claim_oracle.md
-https://github.com/IanCao/genlayer-primitives/blob/main/scripts/verify_deployment.mjs
+https://github.com/IanCao/genlayer-primitives/blob/oracle-v1.0.0/contracts/optimistic_claim_oracle.py
+https://github.com/IanCao/genlayer-primitives/blob/oracle-v1.0.0/docs/optimistic_claim_oracle.md
 ```
 
 ---
@@ -70,11 +93,10 @@ Round one is asymmetric: only the provider has a document, so the guard is indep
 **证明材料**
 
 ```
+https://github.com/IanCao/genlayer-primitives/releases/tag/escrow-v1.0.0
 https://explorer-studio.genlayer.com/address/0x28Ee25d23d30f8E7C53eF54DBf0dF328813E3105
-https://github.com/IanCao/genlayer-primitives
-https://github.com/IanCao/genlayer-primitives/blob/main/contracts/deliverable_escrow.py
-https://github.com/IanCao/genlayer-primitives/blob/main/docs/deliverable_escrow.md
-https://github.com/IanCao/genlayer-primitives/blob/main/scripts/verify_deployment.mjs
+https://github.com/IanCao/genlayer-primitives/blob/escrow-v1.0.0/contracts/deliverable_escrow.py
+https://github.com/IanCao/genlayer-primitives/blob/escrow-v1.0.0/docs/deliverable_escrow.md
 ```
 
 ---
