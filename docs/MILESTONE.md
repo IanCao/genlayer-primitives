@@ -57,7 +57,7 @@ already contain everything a Steward needs, so the move costs nothing but a push
 | What changed, field by field | `CHANGELOG.md` - constructor, states, writes, views, payout, tests |
 | Why it changed | `docs/optimistic_claim_oracle_v2.md` - the three v1 failure modes, then the four design choices |
 | Is it tested | `tests/test_oracle_v2_logic.py` - 30 tests; `pytest tests -q` shows 86 passed in under a second |
-| Is it real code | `contracts/optimistic_claim_oracle_v2.py` - 470 lines, same house style as v1, no imports from it |
+| Is it real code | `contracts/optimistic_claim_oracle_v2.py` - 632 lines, same house style as v1, no imports from it |
 | Can I check a deployment | `ORACLE_V2_ADDRESS=0x... node scripts/verify_deployment.mjs` |
 
 ## Optional: deploy v2 so the milestone has an on-chain address too

@@ -23,7 +23,7 @@ gives the losing party one round to contest the decision.
 | New views | - | `is_appealable(claim_id)`, `pot_of(claim_id)` |
 | Claim fields | 11 | 15 (`appeal_deadline`, `appellant`, `appeal_bond`, `counter_evidence`) |
 | Max payout | 2×bond | 3×bond |
-| Tests | 26 oracle | 56 oracle (30 new) |
+| Tests | 27 oracle | 57 oracle (30 new) |
 
 ### What did **not** change
 
