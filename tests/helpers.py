@@ -51,3 +51,17 @@ def deploy_escrow(escalation_window: int = 3600):
     module = load_contract("contracts/deliverable_escrow.py")
     contract = module.DeliverableEscrow(module.u256(escalation_window))
     return module, contract
+
+
+def deploy_oracle_v2(
+    min_bond: int = GEN // 100,
+    challenge_window: int = 3600,
+    appeal_window: int = 3600,
+):
+    module = load_contract("contracts/optimistic_claim_oracle_v2.py")
+    contract = module.OptimisticClaimOracleV2(
+        module.u256(min_bond),
+        module.u256(challenge_window),
+        module.u256(appeal_window),
+    )
+    return module, contract

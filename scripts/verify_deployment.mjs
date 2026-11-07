@@ -48,6 +48,24 @@ const CONTRACTS = [
   },
 ];
 
+// v2 is optional: pass its address and it joins the same battery of checks.
+// The constructor values below are the reference deployment; deploying with
+// different arguments is fine, the storage check just needs them updated here.
+if (process.env.ORACLE_V2_ADDRESS) {
+  CONTRACTS.push({
+    name: "OptimisticClaimOracleV2",
+    address: process.env.ORACLE_V2_ADDRESS,
+    source: "contracts/optimistic_claim_oracle_v2.py",
+    ctor: [
+      ["min_bond", BigInt(process.env.ORACLE_V2_MIN_BOND ?? "10000000000000000")],
+      ["challenge_window", BigInt(process.env.ORACLE_V2_CHALLENGE_WINDOW ?? "86400")],
+      ["appeal_window", BigInt(process.env.ORACLE_V2_APPEAL_WINDOW ?? "3600")],
+    ],
+    view: {fn: "claim_count", args: []},
+    guard: {fn: "post_claim", args: ["probe", "https://example.com"]},
+  });
+}
+
 // Studio returns the code with CRLF endings; the repo uses LF.
 const normalise = (s) => s.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 const sha = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);

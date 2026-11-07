@@ -76,6 +76,36 @@ payable and its first statement reverts with both the value sent and the stored
 text, straight out of the contract's own execution. Both routes return
 `10000000000000000`, so the deployed floor is not a guess from the deploy input.
 
+## v2: the appeal round
+
+`contracts/optimistic_claim_oracle_v2.py` - the oracle, with a remedy for a wrong
+decision. v1 paid the moment `resolve()` returned, so a bad adjudication was
+permanent: nobody can appeal a verdict that has already moved money.
+
+v2 separates the two verbs.
+
+```
+resolve()          decides, writes the verdict, pays nobody, opens the window
+finalise()         after the window: pays round one's verdict
+appeal()           by the party round 1 ruled against, bond matched,
+                   up to 2 counter-evidence URLs
+resolve_appeal()   round two: blind to round one, weighs both document sets,
+                   pays 3x bond to the winner (or refunds each stake)
+```
+
+Two properties are worth stating plainly, because they are the whole design:
+
+- **Round two never sees round one.** The first verdict, confidence and reasoning
+  are absent from the appeal prompt. An appeal that can read the first answer
+  becomes a request to defend it.
+- **INCONCLUSIVE refunds everyone, in both rounds.** A forced verdict is farmable;
+  a fabricated answer and a considered one look identical from outside.
+
+`resolve()` no longer credits anyone, so integrators must call `finalise()` or
+`resolve_appeal()` to settle. Full rationale:
+[`docs/optimistic_claim_oracle_v2.md`](docs/optimistic_claim_oracle_v2.md) ·
+what changed, field by field: [`CHANGELOG.md`](CHANGELOG.md).
+
 ## Why these are primitives rather than demos
 
 A "thin LLM wrapper" asks a model a question and stores the answer. Neither of
@@ -110,8 +140,8 @@ these contracts does that:
 ## Repository layout
 
 ```
-contracts/    the two primitives
-tests/        56 offline logic tests (pytest)
+contracts/    the two primitives plus optimistic_claim_oracle_v2.py
+tests/        86 offline logic tests (pytest)
 tools/        genshim - a minimal GenVM stand-in so logic tests run anywhere
 scripts/      verify_deployment.mjs - checks the live deployment against this source
 docs/         per-primitive design notes, ready to paste into a submission
@@ -126,7 +156,7 @@ pip install pytest                # add genlayer-test only for direct-mode runs
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests -q -p no:cacheprovider
 ```
 
-**56 tests, <1s, no network, no Docker.**
+**86 tests, <1s, no network, no Docker.**
 
 `tests/` runs the contracts against `tools/genshim/genlayer.py`, a ~250 line
 stand-in for GenVM that implements exactly the surface these two contracts touch:
