@@ -31,6 +31,9 @@ tree=$(git write-tree)
 commit=$(git commit-tree "$tree" -m "Publish the Adjudicate web client")
 
 echo "publishing $commit"
-git push origin "$commit:refs/heads/gh-pages"
+# The gh-pages history is disposable: every run rebuilds the tree from app/, so
+# the commit is never a descendant of the previous one. Force is required and
+# loses nothing that is not already in main.
+git push --force origin "$commit:refs/heads/gh-pages"
 echo "done - Pages rebuilds in about a minute"
 echo "https://iancao.github.io/genlayer-primitives/"
